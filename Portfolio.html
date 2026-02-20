@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ivan Abogado | Creative Technologist </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Orbit&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CSS STYLING --- */
+
+        :root {
+            --text-color: #333;
+            --bg-color: transparent;
+            --accent-color: #000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            color: var(--text-color);
+            overflow-x: hidden;
+            position: relative;
+            /* Extra padding at bottom so you can scroll past the footer to see it fade out */
+            padding-bottom: 50vh; 
+        }
+
+        h1, h2 {
+            font-family:'Orbit', Courier, monospace;
+            letter-spacing: -2px;
+        }
+
+        #p5-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+        }
+
+        header, section, footer {
+            padding: 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            backdrop-filter: blur(2px); 
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+        }
+
+        .logo {
+            font-family: 'Orbit', sans-serif;
+            letter-spacing: -2px;
+            font-weight: 300;
+            font-size: 6rem;
+            /* letter-spacing: -1px; */
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            margin-left: 2rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--text-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        h1 {
+            font-size: 5rem;
+            line-height: 0.9;
+            margin-bottom: 1rem;
+            mix-blend-mode: multiply;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            max-width: 600px;
+        }
+
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* .work-item { OLD
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 2rem;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+        } */
+
+        /*FOR IMAGES*/
+        /*update containter to hold an image*/
+        .work-item {
+            background: #fff; /* fallback color */
+            padding: 0; /*remove padding so image fills the box*/
+            position: relative; /*needed for positioning text over image*/
+            overflow: hidden; /*clips image if it zooms on hover*/
+            transition: transform 0.3 ease; /*keep previous animation settings*/
+        }
+
+        /*style the image*/
+        .work-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* forces image to fill box*/
+            display: block;
+            transition: transform 0.5s ease; /*smooth zoom effect*/
+        }
+
+        /* .work-item:hover { OLD
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+        } */
+
+        /*NEW*/
+        /*zoom image slightly on hover*/
+        .work-item:hover img {
+            transform: scale(1.05);
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /*ensures image covers box without stretching*/
+            display: block;
+        }
+
+        /*the text overlay*/
+        .work-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /*dark see through layer*/
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /*fix*/
+            text-align: center; /*centers everything inside h3 and p*/
+            /*----*/
+            opacity: 0; /*hidden by default*/
+            transition: opacity 0.3s ease;
+        }
+
+        /*show text when hovering over the item*/
+        .work-item:hover .work-overlay {
+            opacity: 1;
+        }
+
+        /*style the text inside the overlay*/
+        .work-overlay h3 {
+            color: #fff;
+            font-family: 'Orbit', sans-serif; 
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            /* fix */
+            text-align: center; /*forces text to center*/
+            width: 100%; /*ensures box spans whole image*/
+            padding: 0 10px; /*prevents from hitting edges*/
+            /*----*/
+            transform: translateY(20px); /*push text down initially*/
+            transition: transform 0.3s ease;
+        }
+
+        .work-item:hover .work-overlay h3 {
+            transform: translateY(0); /*slide text up on hover*/
+        }
+
+          html {
+            scroll-behavior: smooth;
+        }
+
+        /*Ensure clickable boxes dont look like links*/
+        a.work-item {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            cursor: pointer;
+        }
+
+        /* --- ANIMATION STYLES --- */
+        .hidden {
+            opacity: 0;
+            filter: blur(5px);
+            transform: translateY(50px); 
+            transition: all 0.8s ease-out; /* Slightly faster for snappier re-appearance */
+        }
+
+        .show {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0);
+        }
+
+        /* Staggered delay for grid items */
+        .work-item:nth-child(2) { transition-delay: 100ms; }
+        .work-item:nth-child(3) { transition-delay: 200ms; }
+        .work-item:nth-child(4) { transition-delay: 300ms; }
+
+        /* --- CAROUSEL STYLES --- */
+        .carousel-row {
+            display: flex; 
+            flex-wrap: nowrap; 
+            
+            /* DESKTOP FIX: 'hidden' stops trackpad/wheel from working manually */
+            overflow-x: auto; 
+            
+            gap: 10px; 
+            padding-bottom: 2rem; 
+            scroll-behavior: auto; /* Must be auto for JS to work instantly */
+
+            /* Hide scrollbars visually */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        /* Hide scrollbar for Chrome/Safari */
+        .carousel-row::-webkit-scrollbar{
+            display: none;
+        }
+
+        /* Standard Item Styles */
+        .carousel-row .work-item {
+            flex: 0 0 calc(20% - 10px); 
+            min-width: calc(20% - 10px); 
+            height: 400px; 
+            scroll-snap-align: start; 
+            margin-right: 0; 
+        }
+
+        /* --- MOBILE CONFIGURATION --- */
+        @media (max-width: 768px) {
+            
+            /* MOBILE FIX: Turn manual scrolling back ON */
+            .carousel-row {
+                overflow-x: auto; 
+                scroll-snap-type: x mandatory; /* Magnetic snapping */
+                scroll-behavior: smooth; /* Smooth physics for swipes */
+            }
+
+            .carousel-row .work-item {
+                flex: 0 0 85%; 
+                min-width: 85%;
+            }
+        }
+
+        /* --- CONTACT SECTION STYLES --- */
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Split screen 50/50 */
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Input Styling: Transparent with bottom border */
+        .contact-form input, 
+        .contact-form textarea {
+            width: 100%;
+            padding: 10px 0;
+            font-family: 'EB Garamond', serif;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #000;
+            outline: none;
+            transition: border-bottom 0.3s ease;
+            border-radius: 0; /* Removes default radius on iOS */
+        }
+
+        /* Highlight border on focus */
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            border-bottom: 2px solid #000;
+        }
+
+        /* Labels */
+        .contact-form label {
+            font-family: 'Orbit', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            background: transparent;
+            border: 1px solid #000;
+            color: #000;
+            padding: 1rem 2rem;
+            font-family: 'Orbit', sans-serif;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        /* Mobile Adjustment */
+        @media (max-width: 768px) {
+            .contact-layout {
+                grid-template-columns: 1fr; /* Stack vertically on mobile */
+                gap: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="p5-container"></div>
+
+    <header>
+        <nav>
+            <div class="logo hidden">IVAN ABOGADO</div>
+            <div class="nav-links hidden">
+                <a href="#work">Work</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1 class="hidden">Creative<br>Techonologist.</h1>
+        <p class="subtitle hidden">A creative portfolio blending art and technology.</p>
+    </section>
+
+    <section id="work">
+        <h2 class="hidden">Selected Works</h2>
+        <div class="work-grid">
+
+             <a href="#tech-section" class="work-item hidden">
+                <img src="myImages/IMG_8143.JPG" alt="Creative Technology">
+                <div class="work-overlay">
+                    <h3 style="font-size: 1.5rem;">Creative Technology</h3>
+                    <p style="color: #ccc;">Interactive Technology</p>
+                </div>
+            </a>
+
+            <a href="#films-section" class="work-item hidden">
+                <img src="myImages/IMG_5648.jpg" alt="Films and TV Shows">
+                <div class="work-overlay">
+                    <h3 style="font-size: 1.5rem;">Films and TV Shows</h3>
+                    <p style="color: #ccc;">Post Production Sound Design and Mixing</p>
+                </div>
+            </a>
+
+            <a href="#music-section" class="work-item hidden">
+                <img src="myImages/IMG_6120.JPG" alt="Music">
+                <div class="work-overlay">
+                    <h3 style="font-size: 1.5rem;">Music</h3>
+                    <p style="color: #ccc;">Composition and Music Production</p>
+                </div>
+            </a>
+            
+            <a href="visuals-section" class="work-item hidden">
+                <img src="myImages/lines.jpg" alt="Visuals">
+                <div class="work-overlay">
+                    <h3 style="font-size: 1.5rem;">Visuals</h3>
+                    <p style="color: #ccc;">Art and 3D</p>
+                </div>
+            </a>
+                    
+            <!-- <div class="work-item hidden"><h3>Films and TV Shows</h3></div>
+            <div class="work-item hidden"><h3>Music</h3></div>
+            <div class="work-item hidden"><h3>Creative Technology</h3></div>
+            <div class="work-item hidden"><h3>Visuals</h3></div> -->
+        </div>
+    </section>
+
+    <section id="creativetech-section" style="padding-top: 8rem;">
+        <h2 class = "hidden">Creative Technology Projects</h2>
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <p class="hidden" style="margin-bottom: 2rem; max-width: 600px;">
+                A selection of Creative Technology works including devices and art.
+                Click a project to read more.
+            </p>
+            <p class="hidden" style="font-size: 0.8rem; opacity: 0.5;">Scroll →</p>
+        </div>
+
+        <div class="carousel-row">
+
+            <a href="" target="_blank" class="work-item hidden">
+                <img src="myImages/IMG_8143.JPG" alt="Film Project 1">
+                <div class="work-overlay">
+                    <h3>Life in Terms of Sound</h3>
+                    <p style="color: #ccc;">Ideation, Fabrication, Functionality</p>             
+                </div>
+            </a>
+
+             <a href="" target="_blank" class="work-item hidden">
+                <img src="myImages/puff.jpg" alt="Film Project 2">
+                <div class="work-overlay">
+                    <h3>Puffy Music Instrument</h3>
+                    <p style="color: #ccc;">Ideation, Functionality</p>             
+                </div>
+            </a>
+        </div>
+    </section>
+    
+    <section id="films-section" style="padding-top: 8rem;">
+        <h2 class = "hidden">Film & TV Projects</h2>
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <p class="hidden" style="margin-bottom: 2rem; max-width: 600px;">
+                A selection of post-production works including sound design, editing and mixing.
+                Click a project to watch.
+            </p>
+            <p class="hidden" style="font-size: 0.8rem; opacity: 0.5;">Scroll →</p>
+        </div>
+
+        <div class="carousel-row">
+
+            <a href="https://www.netflix.com/login?serverState=%7B%22realm%22%3A%22growth%22%2C%22name%22%3A%22LOGIN%22%2C%22clcsSessionId%22%3A%22ed70a035-8ee5-4bc8-a01d-217035734436%22%2C%22sessionContext%22%3A%7B%22session-breadcrumbs%22%3A%7B%22funnel_name%22%3A%22loginWeb%22%7D%7D%7D" target="_blank" class="work-item hidden">
+                <img src="myImages/Disco_Ibiza_Locomia_poster_edit.jpg" alt="Film Project 1">
+                <div class="work-overlay">
+                    <h3>Disco Ibiza Locomia</h3>
+                    <p style="color: #ccc;">Re-recording Mixer</p>             
+                </div>
+            </a>
+
+             <a href="https://www.netflix.com/login?serverState=%7B%22realm%22%3A%22growth%22%2C%22name%22%3A%22LOGIN%22%2C%22clcsSessionId%22%3A%22ed70a035-8ee5-4bc8-a01d-217035734436%22%2C%22sessionContext%22%3A%7B%22session-breadcrumbs%22%3A%7B%22funnel_name%22%3A%22loginWeb%22%7D%7D%7D" target="_blank" class="work-item hidden">
+                <img src="myImages/el_baile_41_poster_edit.jpg" alt="Film Project 2">
+                <div class="work-overlay">
+                    <h3>Dance of the 41</h3>
+                    <p style="color: #ccc;">Sound Designer</p>             
+                </div>
+            </a>
+
+             <a href="https://play.hbomax.com/?lang=es&utm_id=sa|22341445321|177853062913|44068401&gclsrc=aw.ds&gad_source=1&gad_campaignid=22341445321&gbraid=0AAAAApH9fnq-S5LVFvSsGrs0ihcMZaVwV&gclid=Cj0KCQiApfjKBhC0ARIsAMiR_IuSTs-fwGFXESuE-tdfhTspwznZhE2nvWFtP0ITvuBpZ08R0Fw55FwaArR-EALw_wcB" target="_blank" class="work-item hidden">
+                <img src="myImages/los_colorado_poster_edit.jpg" alt="Film Project 3">
+                <div class="work-overlay">
+                    <h3>Los Colorado</h3>
+                    <p style="color: #ccc;">Sound Designer/Re-recording Mixer</p>             
+                </div>
+            </a>
+
+            <a href="https://play.hbomax.com/show/e0375dd6-9ef4-4d12-ac39-a4a115a535ec" target="_blank" class="work-item hidden">
+                <img src="myImages/las_bravas_poster_edit.jpg" alt="Film Project 4">
+                <div class="work-overlay">
+                    <h3>Las Bravas FC</h3>
+                    <p style="color: #ccc;">Re-recording Mixer</p>             
+                </div>
+            </a>
+
+            <a href="https://www.netflix.com/login?serverState=%7B%22realm%22%3A%22growth%22%2C%22name%22%3A%22LOGIN%22%2C%22clcsSessionId%22%3A%22ed70a035-8ee5-4bc8-a01d-217035734436%22%2C%22sessionContext%22%3A%7B%22session-breadcrumbs%22%3A%7B%22funnel_name%22%3A%22loginWeb%22%7D%7D%7D" target="_blank" class="work-item hidden">
+                <img src="myImages/el_caso_cassez_vallarta_una_novela_criminal-960172826-large_edit.jpg" alt="Film Project 5">
+                <div class="work-overlay">
+                    <h3>A Kidnapping Scandal: The Florence Cassez Affair</h3>
+                    <p style="color: #ccc;">Sound Designer</p>             
+                </div>
+            </a>
+
+             <a href="https://www.disneyplus.com/es-419/browse/search" target="_blank" class="work-item hidden">
+                <img src="myImages/toda_la_sangre_poster_edit.jpg" alt="Film Project 5">
+                <div class="work-overlay">
+                    <h3>Toda la Sangre</h3>
+                    <p style="color: #ccc;">Sound Designer</p>             
+                </div>
+            </a>
+        </div>
+         <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <p class="hidden" style="margin-bottom: 2rem; max-width: 600px;">
+            </p>
+           <a href="https://www.imdb.com/name/nm9565220/?ref_=nv_sr_srsg_0_tt_0_nm_3_in_0_q_gerardo%2520abogado">
+            <p class="hidden" style="font-size: 0.8rem; opacity: 0.5;">more...</p>
+            </a>
+        </div>
+    </section>
+
+    <section id="about">
+        <h2 class="hidden">About</h2>
+        <p class="hidden" style="max-width: 600px; margin-top: 1rem; line-height: 1.6;">
+           Gerardo Ivan Abogado Villamil is a multidisciplinary artist born and raised in Mexico City, now based in New York. 
+           From an early age, he has been exploring music theory, composition, piano and guitar playing. 
+           Later on, moved by his curiosity to learn the technology applied to music production, he pursued his undergraduate degree in Digital Music Production Engineering in Instituto Tecnológico y de Estudios Superiores de Monterrey (Tec de Monterrey) at Mexico City Campus. 
+           The years as an undergrad allowed him to get hands-on experience in the world of sound engineering, from signal flow and processing inside a professional recording studio to experimenting with microcontroller devices that allowed the communication between computer, DAWs and instruments via MIDI and scripting. 
+           In the same way, to understand the physical nuances of sound theory. 
+           Reaching the end of this degree, Ivan had the opportunity to study abroad for a one-year Sound Design for Visual Media program at Vancouver Film School (VFS). 
+           This experience allowed him to dive deeper into the pipeline for sound recording, editing, designing and mixing for the film industry standards. 
+           Moreover, he was able to explore the vast possibilities of video games sound implementation within the world of game engines such as Unity and Unreal Engine.
+        </p>
+        <p class="hidden" style="max-width: 600px; margin-top: 1rem; line-height: 1.6;">
+          After graduating from both programs, he got the opportunity to work side by side with film industry professionals at the post production studio Labo, located in Coyoacán, Mexico City. 
+          With 5+ years of experience, Ivan was able to fully understand a professional sound design pipeline from sound assistant, sound editor and later re-recording mixer. During this time, he was able to collaborate in projects for unique talents such as David Pablos, Kike Maíllo, Gabriel and Rodolfo Riva Palacios, Grupo Chespirito and Jorge Riquelme Serrano to name a few. 
+          Some of these projects were showcased in national theaters as well as his clients' streaming platforms such as Netflix, Warner (HBO Max), Disney+, Amazon Prime Video, Paramount and Vix.
+
+        </p>
+        <p class="hidden" style="max-width: 600px; margin-top: 1rem; line-height: 1.6;">
+           After experiencing the never ending growth of technology in the field, he decided to delve back into the world of engineering and innovation in the entertainment industry and beyond by coursing his master of professional studies degree in the Interactive Telecommunications Program (ITP) in Tisch School of the Arts at New York University (NYU). 
+           Now, he is using technology as his raw material, delving into the next steps of audiovisual production, merging the digital and physical worlds with interactive devices/experiences, as well as sculpting data as visual experiences. 
+           His goal is to master the tools that allow him to collaborate in innovating the way we experience sound, music, film and art. 
+        </p>
+        
+        <p class="hidden" style="max-width: 600px; margin-top: 1rem; line-height: 1.6;">
+          This website is a living example of his philosophy: 
+          Life is based on connections, we are all connected between each other as well as with our surroundings. 
+          There is a logic and a sense of randomness within that logic. 
+          We don't know which point will connect us to the next. 
+          A new person we meet, or an opportunity we get, even an out of nowhere event. 
+          Everything is connected, and happens for a reason. 
+          That's what I believe. That is where structure meets the unexpected. 
+
+        </p>
+    </section>
+
+    <section id="contact" style="padding-top: 8rem; margin-bottom: 4rem;">
+        <h2 class="hidden">Contact</h2>
+        
+        <div class="contact-layout">
+            <div class="contact-text hidden">
+                <h1 style="font-size: 4rem; line-height: 1.1; margin-bottom: 2rem;">
+                    Let's<br>Collaborate!
+                </h1>
+                <p style="font-size: 1.2rem; max-width: 400px; line-height: 1.6;">
+                    Have a project in mind? Whether it involves sound, code, or visuals, 
+                    I'm always open to discussing new ideas and challenges.
+                </p>
+            </div>
+
+            <form action="https://formspree.io/f/xjggklkj" method="POST" class="contact-form hidden">
+                
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required placeholder=" ">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder=" ">
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="5" required placeholder=" "></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="hidden">
+        <p>&copy; 2025 Ivan Abogado. Built with p5.js.</p>
+    </footer>
+
+    <script>
+        let particles = [];
+        const numParticles = 80;
+        const connectionDistance = 120;
+
+        function setup() {
+
+            pixelDensity(window.devicePixelRatio);
+
+            let canvas = createCanvas(windowWidth, windowHeight);
+            canvas.parent('p5-container');
+            for(let i = 0; i < numParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function draw() {
+            background(255, 255, 255);
+            
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                
+                for (let j = index + 1; j < particles.length; j++) {
+                    let other = particles[j];
+                    let d = dist(p.pos.x, p.pos.y, other.pos.x, other.pos.y);
+                    if (d < connectionDistance) {
+                        let alpha = map(d, 0, connectionDistance, 100, 0);
+                        stroke(random(255), random(255), random(255), alpha);
+                        strokeWeight(3);
+                        line(p.pos.x, p.pos.y, other.pos.x, other.pos.y);
+                    }
+                }
+                
+                let mouseD = dist(p.pos.x, p.pos.y, mouseX, mouseY);
+                if (mouseD < 150) {
+                    stroke(random(255), random(255), random(255), 50);
+                    line(p.pos.x, p.pos.y, mouseX, mouseY);
+                }
+            });
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+
+        class Particle {
+            constructor() {
+                this.pos = createVector(random(width), random(height));
+                this.vel = createVector(random(-0.5, 0.5), random(-0.5, 0.5));
+                this.size = random(2, 5);
+            }
+            update() {
+                this.pos.add(this.vel);
+                if (this.pos.x < 0 || this.pos.x > width) this.vel.x *= -1;
+                if (this.pos.y < 0 || this.pos.y > height) this.vel.y *= -1;
+            }
+            draw() {
+                noStroke();
+                fill(random(255), random(255), random(255), 200);
+                circle(this.pos.x, this.pos.y, this.size);
+            }
+        }
+    </script>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                // Check if the element is currently visible in the viewport
+                if (entry.isIntersecting) {
+                    // Make it visible
+                    entry.target.classList.add('show');
+                } else {
+                    // NEW: If it leaves the screen, hide it again
+                    entry.target.classList.remove('show');
+                }
+            });
+        });
+
+        const hiddenElements = document.querySelectorAll('.hidden');
+        hiddenElements.forEach((el) => observer.observe(el));
+    </script>
+
+   <script>
+    const carousel = document.querySelector('.carousel-row');
+
+    // CONFIGURATION
+    const edgeSize = 100; // How close to the edge (in px) to start scrolling
+    const maxSpeed = 20;  // How fast to scroll
+
+    let isScrolling = false;
+    let speed = 0;
+    let animationId = null;
+
+    // HELPER: Strict check for Desktop with Mouse
+    function isDesktop() {
+        return window.innerWidth > 768;
+    }
+
+    // 1. MONITOR MOUSE (Attached to the Carousel, not the Window)
+    carousel.addEventListener('mousemove', (e) => {
+        // STOP if on mobile
+        if (!isDesktop()) return;
+        // console.log("Mouse detected:", e.clientX); // Uncomment to test
+
+        // Get the specific dimensions of the Carousel box
+        const rect = carousel.getBoundingClientRect();
+        
+        // Calculate X relative to the carousel (0 = left edge of carousel)
+        const x = e.clientX - rect.left;
+        
+        // LEFT EDGE
+        if (x < edgeSize) {
+            // Calculate intensity (0 to 1)
+            const intensity = 1 - (x / edgeSize);
+            speed = -(maxSpeed * intensity); // Negative = Left
+            startScrolling();
+        } 
+        // RIGHT EDGE
+        else if (x > rect.width - edgeSize) {
+            // Calculate distance from right edge
+            const distFromRight = rect.width - x;
+            const intensity = 1 - (distFromRight / edgeSize);
+            speed = (maxSpeed * intensity); // Positive = Right
+            startScrolling();
+        } 
+        // MIDDLE
+        else {
+            speed = 0;
+            stopScrolling();
+        }
+    });
+
+    // 2. Stop when mouse leaves the box
+    carousel.addEventListener('mouseleave', stopScrolling);
+
+    // 3. ANIMATION LOOP
+    function startScrolling() {
+        if (!isScrolling) {
+            isScrolling = true;
+            loop();
+        }
+    }
+
+    function stopScrolling() {
+        isScrolling = false;
+        speed = 0;
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+    }
+
+    function loop() {
+        if (isScrolling) {
+            carousel.style.scrollBehavior = "auto";
+            carousel.scrollLeft += speed;
+            animationId = requestAnimationFrame(loop);
+        } else {
+            carousel.style.scrollBehavior = "smooth";
+        }
+    }
+</script>
+</body>
+</html>

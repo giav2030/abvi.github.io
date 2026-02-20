@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ivan Abogado | Creative Technologist</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Orbit&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --text-primary: #1a1a1a;
+            --text-secondary: #555;
+            --text-muted: #888;
+            --bg-primary: #fafafa;
+            --bg-secondary: #f0f0f0;
+            --accent: #2a2a2a;
+            --border: rgba(0,0,0,0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            overflow-x: hidden;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: 'Orbit', monospace;
+            font-weight: 400;
+            letter-spacing: -1px;
+        }
+
+        h1 { font-size: clamp(3rem, 8vw, 6rem); line-height: 1; }
+        h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); margin-bottom: 2rem; }
+        h3 { font-size: 1.1rem; letter-spacing: 0; }
+
+        p { max-width: 600px; }
+
+        /* Canvas Background - More Prominent */
+        #p5-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        /* Content Layer */
+        .content-layer {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 clamp(1.5rem, 5vw, 4rem);
+        }
+
+        section {
+            padding: 8rem 0;
+        }
+
+        /* Glass effect for content readability */
+        .glass-panel {
+            background: rgba(250, 250, 250, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem 0;
+            background: rgba(250, 250, 250, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbit', monospace;
+            font-size: 1.2rem;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            font-family: 'Orbit', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 6rem;
+            position: relative;
+        }
+
+        .hero-content {
+            padding: 3rem;
+            border-radius: 2px;
+            max-width: 700px;
+        }
+
+        .hero h1 {
+            margin-bottom: 1.5rem;
+        }
+
+        .hero .subtitle {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            font-style: italic;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-family: 'Orbit', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .scroll-indicator::after {
+            content: '';
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--text-muted), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; transform: scaleY(0.5); }
+            50% { opacity: 1; transform: scaleY(1); }
+        }
+
+        /* About Section */
+        #about {
+            background: rgba(250, 250, 250, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        #about .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        #about .about-text p {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        #about .about-text p:first-of-type {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+
+        .philosophy {
+            padding: 2rem;
+            background: rgba(0,0,0,0.03);
+            border-left: 2px solid var(--accent);
+            font-style: italic;
+        }
+
+        /* ==================== */
+        /* BENTO WORK SECTION   */
+        /* ==================== */
+        #work {
+            background: transparent;
+            padding: 10rem 0;
+        }
+
+        #work h2 {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(2, 280px);
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .bento-item {
+            position: relative;
+            overflow: hidden;
+            background: #1a1a1a;
+            text-decoration: none;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        /* Bento layout - asymmetric */
+        .bento-item:nth-child(1) {
+            grid-column: span 7;
+            grid-row: span 2;
+        }
+        .bento-item:nth-child(2) {
+            grid-column: span 5;
+            grid-row: span 1;
+        }
+        .bento-item:nth-child(3) {
+            grid-column: span 3;
+            grid-row: span 1;
+        }
+        .bento-item:nth-child(4) {
+            grid-column: span 2;
+            grid-row: span 1;
+        }
+
+        .bento-item img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+            filter: brightness(0.7) saturate(0.9);
+        }
+
+        .bento-item:hover img {
+            transform: scale(1.08);
+            filter: brightness(0.9) saturate(1);
+        }
+
+        .bento-content {
+            position: relative;
+            z-index: 2;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .bento-item:hover .bento-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .bento-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .bento-item p {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.7);
+            max-width: 100%;
+        }
+
+        .bento-label {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            font-family: 'Orbit', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.6);
+            z-index: 3;
+        }
+
+        .bento-number {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            font-family: 'Orbit', monospace;
+            font-size: 4rem;
+            color: rgba(255,255,255,0.1);
+            line-height: 1;
+            z-index: 1;
+        }
+
+        /* ========================= */
+        /* IMMERSIVE PROJECT SCROLL  */
+        /* ========================= */
+        .project-showcase {
+            margin-top: 8rem;
+            padding: 4rem 0;
+            background: rgba(250, 250, 250, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .showcase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 0 clamp(1.5rem, 5vw, 4rem);
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .showcase-header h3 {
+            font-size: 1.8rem;
+        }
+
+        .showcase-header .scroll-hint {
+            font-family: 'Orbit', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .showcase-header .scroll-hint::after {
+            content: '→';
+            animation: hintPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { transform: translateX(0); opacity: 0.5; }
+            50% { transform: translateX(5px); opacity: 1; }
+        }
+
+        .showcase-track {
+            display: flex;
+            gap: 2rem;
+            padding: 0 clamp(1.5rem, 5vw, 4rem);
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            cursor: grab;
+        }
+
+        .showcase-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .showcase-track:active {
+            cursor: grabbing;
+        }
+
+        .showcase-card {
+            flex: 0 0 400px;
+            height: 500px;
+            position: relative;
+            scroll-snap-align: start;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            background: #111;
+        }
+
+        .showcase-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease, filter 0.4s ease;
+            filter: brightness(0.85);
+        }
+
+        .showcase-card:hover img {
+            transform: scale(1.05);
+            filter: brightness(1);
+        }
+
+        .showcase-card-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);
+            transform: translateY(60px);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .showcase-card:hover .showcase-card-content {
+            transform: translateY(0);
+        }
+
+        .showcase-card h4 {
+            font-family: 'Orbit', monospace;
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .showcase-card p {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .showcase-card .role {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(255,255,255,0.1);
+            font-family: 'Orbit', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .showcase-footer {
+            max-width: 1400px;
+            margin: 2rem auto 0;
+            padding: 0 clamp(1.5rem, 5vw, 4rem);
+            text-align: right;
+        }
+
+        .showcase-footer a {
+            font-family: 'Orbit', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .showcase-footer a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Skills Section */
+        #skills {
+            background: rgba(240, 240, 240, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .skill-category h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .skill-category ul {
+            list-style: none;
+        }
+
+        .skill-category li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .skill-category li:hover {
+            color: var(--text-primary);
+            transform: translateX(5px);
+        }
+
+        /* Experience Section */
+        #experience {
+            background: rgba(250, 250, 250, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .experience-grid {
+            display: grid;
+            gap: 3rem;
+        }
+
+        .experience-item {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 2rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .experience-item:last-child {
+            border-bottom: none;
+        }
+
+        .experience-date {
+            font-family: 'Orbit', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .experience-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .experience-content .company {
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .experience-content p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Blog Section */
+        #blog {
+            background: var(--accent);
+            color: #fff;
+            text-align: center;
+        }
+
+        #blog h2 {
+            color: #fff;
+        }
+
+        #blog p {
+            margin: 0 auto 2rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .blog-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Orbit', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .blog-link:hover {
+            background: #fff;
+            color: var(--accent);
+        }
+
+        .blog-link svg {
+            transition: transform 0.3s ease;
+        }
+
+        .blog-link:hover svg {
+            transform: translateX(4px);
+        }
+
+        /* Contact Section */
+        #contact {
+            background: rgba(250, 250, 250, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .contact-text h2 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-text p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .social-links a {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Orbit', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 0;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-btn {
+            align-self: flex-start;
+            font-family: 'Orbit', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0;
+            background: rgba(250, 250, 250, 0.9);
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0 auto;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .bento-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto;
+            }
+            
+            .bento-item:nth-child(1) {
+                grid-column: span 2;
+                grid-row: span 1;
+                min-height: 350px;
+            }
+            .bento-item:nth-child(2),
+            .bento-item:nth-child(3),
+            .bento-item:nth-child(4) {
+                grid-column: span 1;
+                grid-row: span 1;
+                min-height: 280px;
+            }
+
+            .bento-content {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 900px) {
+            #about .about-content,
+            .contact-layout {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .experience-item {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .showcase-card {
+                flex: 0 0 320px;
+                height: 420px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            section {
+                padding: 5rem 0;
+            }
+
+            .hero {
+                min-height: 90vh;
+            }
+
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bento-item:nth-child(1),
+            .bento-item:nth-child(2),
+            .bento-item:nth-child(3),
+            .bento-item:nth-child(4) {
+                grid-column: span 1;
+                min-height: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="p5-container"></div>
+
+    <div class="content-layer">
+        <!-- Navigation -->
+        <nav>
+            <div class="container">
+                <a href="#" class="logo">Ivan Abogado</a>
+                <div class="nav-links">
+                    <a href="#about">About</a>
+                    <a href="#work">Work</a>
+                    <a href="#skills">Skills</a>
+                    <a href="#experience">Experience</a>
+                    <a href="#blog">Blog</a>
+                    <a href="#contact">Contact</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content glass-panel">
+                    <h1 class="fade-in">Creative<br>Technologist.</h1>
+                    <p class="subtitle fade-in">Blending sound, code, and visual art<br>to craft immersive experiences.</p>
+                </div>
+            </div>
+            <div class="scroll-indicator">Scroll</div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about">
+            <div class="container">
+                <h2 class="fade-in">About</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p class="fade-in">
+                            Gerardo Ivan Abogado Villamil is a multidisciplinary artist born and raised in Mexico City, now based in New York.
+                        </p>
+                        <p class="fade-in">
+                            From an early age, he explored music theory, composition, piano, and guitar. His curiosity for the technology behind music production led him to pursue a degree in Digital Music Production Engineering at Tec de Monterrey, followed by a Sound Design for Visual Media program at Vancouver Film School.
+                        </p>
+                        <p class="fade-in">
+                            With 5+ years of experience in post-production sound, Ivan collaborated with industry professionals on projects for Netflix, HBO Max, Disney+, Amazon Prime Video, and Paramount. Now pursuing his MPS at NYU's Interactive Telecommunications Program (ITP), he's exploring the intersection of technology, interactive experiences, and audiovisual innovation.
+                        </p>
+                    </div>
+                    <div class="philosophy fade-in">
+                        <p>
+                            "Life is based on connections. We are all connected—to each other and to our surroundings. There's a logic, and a sense of randomness within that logic. We don't know which point will connect us to the next. That's where structure meets the unexpected."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Work Section - Bento Grid -->
+        <section id="work">
+            <div class="container">
+                <h2 class="fade-in">Selected Work</h2>
+                
+                <div class="bento-grid">
+                    <a href="#films-showcase" class="bento-item fade-in">
+                        <span class="bento-label">Film & TV</span>
+                        <span class="bento-number">01</span>
+                        <img src="myImages/IMG_5648.jpg" alt="Films & TV">
+                        <div class="bento-content">
+                            <h3>Films & Television</h3>
+                            <p>Sound design and re-recording mixing for Netflix, HBO Max, Disney+, and more.</p>
+                        </div>
+                    </a>
+                    
+                    <a href="#tech-showcase" class="bento-item fade-in">
+                        <span class="bento-label">Creative Tech</span>
+                        <span class="bento-number">02</span>
+                        <img src="myImages/IMG_8143.JPG" alt="Creative Technology">
+                        <div class="bento-content">
+                            <h3>Creative Technology</h3>
+                            <p>Interactive devices and immersive experiences.</p>
+                        </div>
+                    </a>
+                    
+                    <a href="#music-showcase" class="bento-item fade-in">
+                        <span class="bento-label">Music</span>
+                        <span class="bento-number">03</span>
+                        <img src="myImages/IMG_6120.JPG" alt="Music">
+                        <div class="bento-content">
+                            <h3>Music</h3>
+                            <p>Composition & production.</p>
+                        </div>
+                    </a>
+                    
+                    <a href="#visuals-showcase" class="bento-item fade-in">
+                        <span class="bento-label">Visuals</span>
+                        <span class="bento-number">04</span>
+                        <img src="myImages/lines.jpg" alt="Visuals">
+                        <div class="bento-content">
+                            <h3>Visuals</h3>
+                            <p>Art & 3D.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Films Showcase -->
+            <div class="project-showcase" id="films-showcase">
+                <div class="showcase-header">
+                    <h3 class="fade-in">Films & Television</h3>
+                    <span class="scroll-hint fade-in">Drag to explore</span>
+                </div>
+                <div class="showcase-track">
+                    <a href="https://www.imdb.com/title/tt27811219/" target="_blank" class="showcase-card fade-in">
+                        <img src="myImages/Disco_Ibiza_Locomia_poster_edit.jpg" alt="Disco Ibiza Locomia">
+                        <div class="showcase-card-content">
+                            <h4>Disco Ibiza Locomia</h4>
+                            <p>Feature Film — Netflix</p>
+                            <span class="role">Re-recording Mixer</span>
+                        </div>
+                    </a>
+                    <a href="https://www.imdb.com/title/tt11040006/" target="_blank" class="showcase-card fade-in">
+                        <img src="myImages/el_baile_41_poster_edit.jpg" alt="Dance of the 41">
+                        <div class="showcase-card-content">
+                            <h4>Dance of the 41</h4>
+                            <p>Feature Film — Netflix</p>
+                            <span class="role">Sound Designer</span>
+                        </div>
+                    </a>
+                    <a href="https://www.imdb.com/title/tt21437688/" target="_blank" class="showcase-card fade-in">
+                        <img src="myImages/los_colorado_poster_edit.jpg" alt="Los Colorado">
+                        <div class="showcase-card-content">
+                            <h4>Los Colorado</h4>
+                            <p>TV Series — HBO Max</p>
+                            <span class="role">Sound Designer / Mixer</span>
+                        </div>
+                    </a>
+                    <a href="https://www.imdb.com/title/tt14641786/" target="_blank" class="showcase-card fade-in">
+                        <img src="myImages/las_bravas_poster_edit.jpg" alt="Las Bravas FC">
+                        <div class="showcase-card-content">
+                            <h4>Las Bravas FC</h4>
+                            <p>TV Series — HBO Max</p>
+                            <span class="role">Re-recording Mixer</span>
+                        </div>
+                    </a>
+                    <a href="https://www.imdb.com/title/tt15766086/" target="_blank" class="showcase-card fade-in">
+                        <img src="myImages/el_caso_cassez_vallarta_una_novela_criminal-960172826-large_edit.jpg" alt="The Florence Cassez Affair">
+                        <div class="showcase-card-content">
+                            <h4>The Florence Cassez Affair</h4>
+                            <p>Documentary — Netflix</p>
+                            <span class="role">Sound Designer</span>
+                        </div>
+                    </a>
+                    <a href="https://www.imdb.com/title/tt15541112/" target="_blank" class="showcase-card fade-in">
+                        <img src="myImages/toda_la_sangre_poster_edit.jpg" alt="Toda la Sangre">
+                        <div class="showcase-card-content">
+                            <h4>Toda la Sangre</h4>
+                            <p>TV Series — Disney+</p>
+                            <span class="role">Sound Designer</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="showcase-footer">
+                    <a href="https://www.imdb.com/name/nm9565220/" target="_blank">View full filmography on IMDb →</a>
+                </div>
+            </div>
+
+            <!-- Creative Tech Showcase -->
+            <div class="project-showcase" id="tech-showcase">
+                <div class="showcase-header">
+                    <h3 class="fade-in">Creative Technology</h3>
+                    <span class="scroll-hint fade-in">Drag to explore</span>
+                </div>
+                <div class="showcase-track">
+                    <a href="#" class="showcase-card fade-in">
+                        <img src="myImages/IMG_8143.JPG" alt="Life in Terms of Sound">
+                        <div class="showcase-card-content">
+                            <h4>Life in Terms of Sound</h4>
+                            <p>Interactive Installation</p>
+                            <span class="role">Ideation / Fabrication</span>
+                        </div>
+                    </a>
+                    <a href="#" class="showcase-card fade-in">
+                        <img src="myImages/puff.jpg" alt="Puffy Music Instrument">
+                        <div class="showcase-card-content">
+                            <h4>Puffy Music Instrument</h4>
+                            <p>Physical Computing</p>
+                            <span class="role">Ideation / Development</span>
+                        </div>
+                    </a>
+                    <!-- Add more creative tech projects here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills">
+            <div class="container">
+                <h2 class="fade-in">Skills & Technologies</h2>
+                <div class="skills-grid">
+                    <div class="skill-category fade-in">
+                        <h3>Audio & Sound</h3>
+                        <ul>
+                            <li>Pro Tools</li>
+                            <li>Ableton Live</li>
+                            <li>Logic Pro</li>
+                            <li>Sound Design</li>
+                            <li>Mixing & Mastering</li>
+                            <li>Foley Recording</li>
+                            <li>Field Recording</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category fade-in">
+                        <h3>Creative Coding</h3>
+                        <ul>
+                            <li>p5.js / Processing</li>
+                            <li>Arduino</li>
+                            <li>Max/MSP</li>
+                            <li>TouchDesigner</li>
+                            <li>JavaScript</li>
+                            <li>Python</li>
+                            <li>HTML/CSS</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category fade-in">
+                        <h3>Visual & 3D</h3>
+                        <ul>
+                            <li>Unity</li>
+                            <li>Unreal Engine</li>
+                            <li>Blender</li>
+                            <li>After Effects</li>
+                            <li>Premiere Pro</li>
+                            <li>Photoshop</li>
+                        </ul>
+                    </div>
+                    <div class="skill-category fade-in">
+                        <h3>Hardware & Fabrication</h3>
+                        <ul>
+                            <li>Physical Computing</li>
+                            <li>MIDI Integration</li>
+                            <li>Sensor Systems</li>
+                            <li>Laser Cutting</li>
+                            <li>3D Printing</li>
+                            <li>Soldering</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience">
+            <div class="container">
+                <h2 class="fade-in">Experience</h2>
+                <div class="experience-grid">
+                    <div class="experience-item fade-in">
+                        <div class="experience-date">2024 – Present</div>
+                        <div class="experience-content">
+                            <h3>MPS Candidate, Interactive Telecommunications</h3>
+                            <p class="company">NYU Tisch School of the Arts — New York, NY</p>
+                            <p>Exploring the intersection of technology, interactive experiences, and audiovisual innovation. Working on projects that merge digital and physical worlds through creative coding and physical computing.</p>
+                        </div>
+                    </div>
+                    <div class="experience-item fade-in">
+                        <div class="experience-date">2019 – 2024</div>
+                        <div class="experience-content">
+                            <h3>Sound Designer & Re-Recording Mixer</h3>
+                            <p class="company">Labo Post Production — Mexico City, MX</p>
+                            <p>Led sound design and mixing for feature films and TV series distributed on Netflix, HBO Max, Disney+, Amazon Prime Video, and Paramount. Collaborated with directors including David Pablos, Kike Maíllo, and Jorge Riquelme Serrano.</p>
+                        </div>
+                    </div>
+                    <div class="experience-item fade-in">
+                        <div class="experience-date">2018 – 2019</div>
+                        <div class="experience-content">
+                            <h3>Sound Design for Visual Media Program</h3>
+                            <p class="company">Vancouver Film School — Vancouver, BC</p>
+                            <p>Intensive one-year program focused on sound recording, editing, designing, and mixing for film industry standards. Explored video game sound implementation using Unity and Unreal Engine.</p>
+                        </div>
+                    </div>
+                    <div class="experience-item fade-in">
+                        <div class="experience-date">2014 – 2018</div>
+                        <div class="experience-content">
+                            <h3>B.S. Digital Music Production Engineering</h3>
+                            <p class="company">Tec de Monterrey — Mexico City, MX</p>
+                            <p>Gained hands-on experience in sound engineering, signal processing, and studio recording. Experimented with microcontrollers for MIDI communication and DAW integration through scripting.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Section -->
+        <section id="blog">
+            <div class="container">
+                <h2 class="fade-in">Blog</h2>
+                <p class="fade-in">Thoughts on sound, technology, and the creative process.</p>
+                <a href="https://yourblog.com" target="_blank" class="blog-link fade-in">
+                    Read the Blog
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact">
+            <div class="container">
+                <div class="contact-layout">
+                    <div class="contact-text">
+                        <h2 class="fade-in">Let's<br>Collaborate.</h2>
+                        <p class="fade-in">Have a project in mind? Whether it involves sound, code, or visuals, I'm always open to discussing new ideas and challenges.</p>
+                        <div class="social-links fade-in">
+                            <a href="https://linkedin.com/in/yourprofile" target="_blank" aria-label="LinkedIn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                </svg>
+                            </a>
+                            <a href="https://instagram.com/yourprofile" target="_blank" aria-label="Instagram">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                </svg>
+                            </a>
+                            <a href="https://github.com/yourprofile" target="_blank" aria-label="GitHub">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                            </a>
+                            <a href="https://www.imdb.com/name/nm9565220/" target="_blank" aria-label="IMDb">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14.31 9.588v.005c-.077-.048-.227-.07-.42-.07v4.815c.27 0 .44-.06.5-.165.062-.105.093-.39.093-.855v-2.725c0-.345-.004-.575-.012-.69a.727.727 0 00-.16-.315zm-6.19-2.42h-4.12v9.672h4.12v-9.672zm-.268 1.863h-1.17v5.95h-1.51v-5.95h-1.17v-1.63h3.85v1.63zm1.845 5.96h1.29v-7.82h1.78v7.82h1.36l.12-1.14c.16.39.38.66.67.83.3.17.67.27 1.11.31.44.04.93-.03 1.46-.21v-1.59c-.21.12-.42.19-.63.21-.22.02-.37-.08-.46-.3-.08-.22-.12-.59-.12-1.1v-2.31c0-.62-.06-1.08-.18-1.38-.12-.3-.35-.54-.69-.71-.34-.17-.81-.25-1.41-.25-.6 0-1.09.09-1.46.27-.37.18-.64.44-.81.78-.17.34-.26.79-.26 1.34h1.63c0-.35.04-.61.12-.79.08-.18.22-.27.42-.27.2 0 .33.07.39.21.06.14.09.38.09.73v.62c-.36.05-.66.12-.91.21-.48.18-.84.41-1.08.69-.24.28-.36.65-.36 1.11 0 .55.14.99.42 1.32.28.33.68.5 1.2.5.29 0 .56-.05.81-.14.25-.09.48-.24.69-.45l.02.48h-.04zm-.62-1.78c-.16.12-.32.18-.48.18-.15 0-.27-.06-.36-.18-.09-.12-.14-.3-.14-.54 0-.28.05-.49.14-.63.09-.14.26-.26.51-.36.14-.05.29-.1.45-.14v1.67h-.12z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <form action="https://formspree.io/f/xjggklkj" method="POST" class="contact-form fade-in">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <p>© 2025 Ivan Abogado. Crafted with code and curiosity.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- p5.js Background - Enhanced -->
+    <script>
+        let particles = [];
+        const numParticles = 100;
+        const connectionDistance = 180;
+        let mouseInfluenceRadius = 250;
+
+        function setup() {
+            pixelDensity(window.devicePixelRatio);
+            let canvas = createCanvas(windowWidth, windowHeight);
+            canvas.parent('p5-container');
+            
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function draw() {
+            background(250);
+            
+            // Calculate mouse velocity for dynamic effects
+            let mouseSpeed = dist(mouseX, mouseY, pmouseX, pmouseY);
+            
+            particles.forEach((p, index) => {
+                p.update(mouseX, mouseY, mouseSpeed);
+                p.draw();
+                
+                // Connect nearby particles
+                for (let j = index + 1; j < particles.length; j++) {
+                    let other = particles[j];
+                    let d = dist(p.pos.x, p.pos.y, other.pos.x, other.pos.y);
+                    if (d < connectionDistance) {
+                        let alpha = map(d, 0, connectionDistance, 80, 0);
+                        stroke(60, 60, 70, alpha);
+                        strokeWeight(1.5);
+                        line(p.pos.x, p.pos.y, other.pos.x, other.pos.y);
+                    }
+                }
+                
+                // Connect to mouse with color accent
+                let mouseD = dist(p.pos.x, p.pos.y, mouseX, mouseY);
+                if (mouseD < mouseInfluenceRadius) {
+                    let alpha = map(mouseD, 0, mouseInfluenceRadius, 120, 0);
+                    let hue = map(mouseD, 0, mouseInfluenceRadius, 200, 240);
+                    
+                    // Subtle blue-gray accent near mouse
+                    stroke(80, 90, 110, alpha);
+                    strokeWeight(1.5);
+                    line(p.pos.x, p.pos.y, mouseX, mouseY);
+                }
+            });
+            
+            // Draw subtle mouse point
+            if (mouseX > 0 && mouseY > 0) {
+                noStroke();
+                fill(80, 90, 110, 40);
+                circle(mouseX, mouseY, 8);
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+
+        class Particle {
+            constructor() {
+                // Start particles scattered around the center region
+                this.pos = createVector(
+                    width/2 + random(-width/3, width/3), 
+                    height/2 + random(-height/3, height/3)
+                );
+                this.vel = createVector(random(-0.5, 0.5), random(-0.5, 0.5));
+                this.baseVel = this.vel.copy();
+                this.size = random(3, 6);
+                this.baseSize = this.size;
+                this.centerX = width / 2;
+                this.centerY = height / 2;
+            }
+            
+            update(mx, my, mouseSpeed) {
+                // Update center reference on resize
+                this.centerX = width / 2;
+                this.centerY = height / 2;
+                
+                // Mouse repulsion/attraction effect
+                let mouseD = dist(this.pos.x, this.pos.y, mx, my);
+                if (mouseD < mouseInfluenceRadius) {
+                    let force = map(mouseD, 0, mouseInfluenceRadius, 0.8, 0);
+                    let angle = atan2(this.pos.y - my, this.pos.x - mx);
+                    this.vel.x += cos(angle) * force * 0.1;
+                    this.vel.y += sin(angle) * force * 0.1;
+                    
+                    // Grow slightly when near mouse
+                    this.size = lerp(this.size, this.baseSize * 1.5, 0.1);
+                } else {
+                    this.size = lerp(this.size, this.baseSize, 0.05);
+                }
+                
+                // Calculate distance from center
+                let distFromCenter = dist(this.pos.x, this.pos.y, this.centerX, this.centerY);
+                let maxDist = min(width, height) * 0.45; // Edge threshold
+                
+                // Gradually pull back toward center when approaching edges
+                if (distFromCenter > maxDist * 0.6) {
+                    let pullStrength = map(distFromCenter, maxDist * 0.6, maxDist, 0, 0.03);
+                    pullStrength = constrain(pullStrength, 0, 0.05);
+                    
+                    // Calculate direction back to center
+                    let angleToCenter = atan2(this.centerY - this.pos.y, this.centerX - this.pos.x);
+                    this.vel.x += cos(angleToCenter) * pullStrength;
+                    this.vel.y += sin(angleToCenter) * pullStrength;
+                }
+                
+                // Dampen velocity
+                this.vel.x = lerp(this.vel.x, this.baseVel.x, 0.015);
+                this.vel.y = lerp(this.vel.y, this.baseVel.y, 0.015);
+                
+                // Limit max velocity
+                let maxVel = 2;
+                this.vel.x = constrain(this.vel.x, -maxVel, maxVel);
+                this.vel.y = constrain(this.vel.y, -maxVel, maxVel);
+                
+                this.pos.add(this.vel);
+                
+                // Soft boundary - if somehow beyond edge, gently push back
+                if (this.pos.x < 0 || this.pos.x > width || this.pos.y < 0 || this.pos.y > height) {
+                    let angleToCenter = atan2(this.centerY - this.pos.y, this.centerX - this.pos.x);
+                    this.vel.x = cos(angleToCenter) * 1;
+                    this.vel.y = sin(angleToCenter) * 1;
+                }
+            }
+            
+            draw() {
+                noStroke();
+                // Slightly darker, more visible particles
+                fill(50, 55, 65, 180);
+                circle(this.pos.x, this.pos.y, this.size);
+            }
+        }
+    </script>
+
+    <!-- Scroll Animation -->
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
+    </script>
+
+    <!-- Drag Scroll for Showcase Tracks -->
+    <script>
+        document.querySelectorAll('.showcase-track').forEach(track => {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            track.addEventListener('mousedown', (e) => {
+                isDown = true;
+                track.style.cursor = 'grabbing';
+                startX = e.pageX - track.offsetLeft;
+                scrollLeft = track.scrollLeft;
+            });
+
+            track.addEventListener('mouseleave', () => {
+                isDown = false;
+                track.style.cursor = 'grab';
+            });
+
+            track.addEventListener('mouseup', () => {
+                isDown = false;
+                track.style.cursor = 'grab';
+            });
+
+            track.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - track.offsetLeft;
+                const walk = (x - startX) * 2;
+                track.scrollLeft = scrollLeft - walk;
+            });
+
+            track.style.cursor = 'grab';
+        });
+    </script>
+</body>
+</html>
