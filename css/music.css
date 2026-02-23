@@ -15,9 +15,9 @@
     padding: 3rem;
     border-radius: 2px;
     max-width: 700px;
-    background: rgba(250, 250, 250, 0.85);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
 }
 .music-hero h1 { margin-bottom: 1rem; }
 .music-hero .subtitle {
@@ -30,7 +30,7 @@
 /* Band Sections */
 .band-section {
     padding: 6rem 0;
-    background: rgba(250, 250, 250, 0.9);
+    background: rgba(10, 10, 10, 0.95);
     backdrop-filter: blur(10px);
     margin-bottom: 2rem;
 }
@@ -80,7 +80,7 @@
     padding: 1.25rem;
 }
 .album-card-info h4 {
-    font-family: 'Orbit', monospace;
+    font-family: var(--font-mono);
     font-size: 1rem;
     margin-bottom: 0.75rem;
     color: #fff;

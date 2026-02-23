@@ -5,14 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ivan Abogado | Creative Technologist</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js" defer></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Orbit&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbit&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div class="custom-cursor"></div>
+    <div class="cursor-follower"></div>
+
     <div id="p5-container"></div>
 
     <div class="content-layer">
@@ -32,12 +37,13 @@
         </nav>
 
         <!-- Hero Section -->
-        <section class="hero">
-            <div class="container">
-                <div class="hero-content glass-panel">
-                    <h1 class="fade-in">Creative<br>Technologist.</h1>
-                    <p class="subtitle fade-in">Blending sound, code, and visual art<br>to craft immersive experiences.</p>
-                </div>
+        <section class="hero" id="hero">
+            <div class="hero-text-wrapper">
+                <h1>
+                    <span class="hero-line">Multimedia</span>
+                    <span class="hero-line">Technologist.</span>
+                </h1>
+                <p class="subtitle">Blending sound, code, and visual art<br>to craft immersive experiences.</p>
             </div>
             <div class="scroll-indicator">Scroll</div>
         </section>
@@ -123,7 +129,7 @@
                 </div>
                 <div class="showcase-track">
                     <a href="https://www.imdb.com/title/tt27811219/" target="_blank" class="showcase-card fade-in">
-                        <img src="myImages/Disco_Ibiza_Locomia_poster_edit.jpg" alt="Disco Ibiza Locomia" loading="lazy">
+                        <img src="https://m.media-amazon.com/images/M/MV5BOThlZGVmMmItOTNhZi00MzYzLTgyNTktODQ5MDM5MTNkNWUyXkEyXkFqcGc@._V1_FMjpg_UY4096_.jpg" alt="Disco Ibiza Locomia" loading="lazy">
                         <div class="showcase-card-content">
                             <h4>Disco Ibiza Locomia</h4>
                             <p>Feature Film — Netflix</p>
@@ -131,7 +137,7 @@
                         </div>
                     </a>
                     <a href="https://www.imdb.com/title/tt11040006/" target="_blank" class="showcase-card fade-in">
-                        <img src="myImages/el_baile_41_poster_edit.jpg" alt="Dance of the 41" loading="lazy">
+                        <img src="https://m.media-amazon.com/images/M/MV5BNDQ4NzdmMjItOGNkZi00ODlmLTk0YjYtYTNmMjgwYzk3NjkxXkEyXkFqcGc@._V1_.jpg" alt="Dance of the 41" loading="lazy">
                         <div class="showcase-card-content">
                             <h4>Dance of the 41</h4>
                             <p>Feature Film — Netflix</p>
@@ -139,7 +145,7 @@
                         </div>
                     </a>
                     <a href="https://www.imdb.com/title/tt21437688/" target="_blank" class="showcase-card fade-in">
-                        <img src="myImages/los_colorado_poster_edit.jpg" alt="Los Colorado" loading="lazy">
+                        <img src="https://m.media-amazon.com/images/M/MV5BZGM1MzU5OGItYTVjNi00NGFmLWEzYmQtZWJhMjY4NzkyNmY1XkEyXkFqcGc@._V1_FMjpg_UY3750_.jpg" alt="Los Colorado" loading="lazy">
                         <div class="showcase-card-content">
                             <h4>Los Colorado</h4>
                             <p>TV Series — HBO Max</p>
@@ -147,7 +153,7 @@
                         </div>
                     </a>
                     <a href="https://www.imdb.com/title/tt14641786/" target="_blank" class="showcase-card fade-in">
-                        <img src="myImages/las_bravas_poster_edit.jpg" alt="Las Bravas FC" loading="lazy">
+                        <img src="https://m.media-amazon.com/images/M/MV5BYWZkYzYyMGUtZDVmOS00MjM2LThiNzEtZDY1ZmRmNTdiZTNmXkEyXkFqcGc@._V1_.jpg" alt="Las Bravas FC" loading="lazy">
                         <div class="showcase-card-content">
                             <h4>Las Bravas FC</h4>
                             <p>TV Series — HBO Max</p>
@@ -155,7 +161,7 @@
                         </div>
                     </a>
                     <a href="https://www.imdb.com/title/tt15766086/" target="_blank" class="showcase-card fade-in">
-                        <img src="myImages/el_caso_cassez_vallarta_una_novela_criminal-960172826-large_edit.jpg" alt="The Florence Cassez Affair" loading="lazy">
+                        <img src="https://m.media-amazon.com/images/M/MV5BYWZiYjFmYjktMDFmNi00ZjZmLWI2NWMtNjVkY2M0OWI0YTBhXkEyXkFqcGc@._V1_.jpg" alt="The Florence Cassez Affair" loading="lazy">
                         <div class="showcase-card-content">
                             <h4>The Florence Cassez Affair</h4>
                             <p>Documentary — Netflix</p>
@@ -163,7 +169,7 @@
                         </div>
                     </a>
                     <a href="https://www.imdb.com/title/tt15541112/" target="_blank" class="showcase-card fade-in">
-                        <img src="myImages/toda_la_sangre_poster_edit.jpg" alt="Toda la Sangre" loading="lazy">
+                        <img src="https://m.media-amazon.com/images/M/MV5BYmQ1OTA1MWEtYzI5Zi00OGRjLTk2ZmYtZWY1ZmEzYzhjNTYzXkEyXkFqcGc@._V1_.jpg" alt="Toda la Sangre" loading="lazy">
                         <div class="showcase-card-content">
                             <h4>Toda la Sangre</h4>
                             <p>TV Series — Disney+</p>
@@ -403,7 +409,7 @@
         <!-- Footer -->
         <footer>
             <div class="container">
-                <p>© 2025 Ivan Abogado. Crafted with code and curiosity.</p>
+                <p>© 2026 Ivan Abogado. Crafted with curiosity for coding.</p>
             </div>
         </footer>
     </div>
