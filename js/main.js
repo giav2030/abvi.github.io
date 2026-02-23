@@ -2,7 +2,7 @@
 /* p5.js Particle Background */
 /* ========================= */
 let particles = [];
-const numParticles = 50;
+const numParticles = 100;
 const connectionDistance = 200;
 let mouseInfluenceRadius = 250;
 

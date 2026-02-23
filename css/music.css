@@ -8,17 +8,19 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    text-align: center;
     padding-top: 8rem;
     padding-bottom: 4rem;
 }
-.music-hero .hero-content {
+/* .music-hero .hero-content {
     padding: 3rem;
     border-radius: 2px;
     max-width: 700px;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.1);
-}
+} */
 .music-hero h1 { margin-bottom: 1rem; }
 .music-hero .subtitle {
     font-size: 1.4rem;
