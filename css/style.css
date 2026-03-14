@@ -283,11 +283,11 @@ nav .container {
 
 /* Bento layout - asymmetric */
 .bento-item:nth-child(1) {
-    grid-column: span 7;
+    grid-column: span 5;
     grid-row: span 2;
 }
 .bento-item:nth-child(2) {
-    grid-column: span 5;
+    grid-column: span 4;
     grid-row: span 1;
 }
 .bento-item:nth-child(3) {
@@ -295,7 +295,11 @@ nav .container {
     grid-row: span 1;
 }
 .bento-item:nth-child(4) {
-    grid-column: span 2;
+    grid-column: span 3;
+    grid-row: span 1;
+}
+.bento-item:nth-child(5) {
+    grid-column: span 4;
     grid-row: span 1;
 }
 
@@ -907,7 +911,8 @@ footer p {
     }
     .bento-item:nth-child(2),
     .bento-item:nth-child(3),
-    .bento-item:nth-child(4) {
+    .bento-item:nth-child(4),
+    .bento-item:nth-child(5) {
         grid-column: span 1;
         grid-row: span 1;
         min-height: 280px;
@@ -957,7 +962,8 @@ footer p {
     .bento-item:nth-child(1),
     .bento-item:nth-child(2),
     .bento-item:nth-child(3),
-    .bento-item:nth-child(4) {
+    .bento-item:nth-child(4),
+    .bento-item:nth-child(5) {
         grid-column: span 1;
         min-height: 280px;
     }
